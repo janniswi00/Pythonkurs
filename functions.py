@@ -1,6 +1,6 @@
 def PatternCount(text:str, pattern:str):
     count = 0
-    for i in range(len(text) - len(pattern)):
+    for i in range(len(text) - len(pattern) +1):
         if text[i: i+len(pattern)] == pattern:
             count += 1
     return count
@@ -9,23 +9,23 @@ def FrequentWords_slow(text, k):
     frequent_patterns = []
     counts = []
 
-    for i in range(len(text) - k):
+    for i in range(len(text) - k + 1):
         pattern = text[i:i+k]
         counts.append(PatternCount(text, pattern))
     
     max_count = max(counts)
 
-    for i in range(len(text) - k):
+    for i in range(len(text) - k +1):
         if counts[i] == max_count:
             frequent_patterns.append(text[i:i+k])
     
-    return frequent_patterns, max_count
+    return set(frequent_patterns), max_count
 
 def FrequencyTable(text, k):
     freq_map = {}
     n = len(text)
 
-    for i in range(n-k):
+    for i in range(n-k+1):
         pattern = text[i:i+k]
         if pattern not in freq_map.keys():
             freq_map[pattern] = 1
@@ -44,24 +44,34 @@ def BetterFrequentWords(text, k):
             frequent_patterns.append(pattern)
     return frequent_patterns, maximum
 
-def GetReverse(sequence):
-    reverse_genome = ""
-    for i in range(len(sequence)):
-        complementary_base = None
-        if sequence[i] == "A":
-            complementary_base = "T"
-        elif sequence[i] == "T":
-            complementary_base = "A"
-        elif sequence[i] == "G":
-            complementary_base = "C"
-        elif sequence[i] == "C":
-            complementary_base = "G"
-        reverse_genome += complementary_base
-    return reverse_genome
+def GetReverse(sequence:str):
+    return sequence.translate(str.maketrans("ACGTacgt","TGCAtgca"))[::-1]
+
 
 def PatternMatching(genome, pattern):
     starting_positions = []
-    for i in range(len(genome)-len(pattern)):
+    for i in range(len(genome)-len(pattern) +1):
         if pattern == genome[i:i+len(pattern)]:
             starting_positions.append(i)
     return starting_positions
+
+def FindClumps(text:str, k:int, L:int, t:int) ->list:
+    """_summary_
+
+    Args:
+        text (str): DNA-Sequence
+        k (int): k-mers
+        L (int): length of window
+        t (int): number of same sequence in window
+    """
+    patterns = []
+    n = len(text)
+
+    for i in range(n-L+1):
+        window = text[i:i+L]
+        freq_map = FrequencyTable(window, k)
+
+        for key in freq_map.keys():
+            if freq_map[key] >= t:
+                patterns.append(key)
+    return(list(set(patterns)))

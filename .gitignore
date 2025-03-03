@@ -1,1 +1,4 @@
 chapter1.2_genome.txt
+__pycache__/
+ecoli_genome.txt
+test_fasta.txt
